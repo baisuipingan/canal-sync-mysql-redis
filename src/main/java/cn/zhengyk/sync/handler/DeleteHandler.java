@@ -1,7 +1,9 @@
 package cn.zhengyk.sync.handler;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
+import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,13 +28,21 @@ public class DeleteHandler extends AbstractHandler {
     }
 
     @Override
-    public void handleRowChange(RowChange rowChange) {
+    public void handleRowChange(CanalEntry.Entry entry) {
+        RowChange rowChange = null;
+        String tableName = entry.getHeader().getTableName();
+        try {
+            rowChange = RowChange.parseFrom(entry.getStoreValue());
+        } catch (InvalidProtocolBufferException e) {
+            log.error("根据CanalEntry获取RowChange异常:", e);
+            return;
+        }
         rowChange.getRowDatasList().forEach(rowData -> {
             rowData.getBeforeColumnsList().forEach(column -> {
                 if("id".equals(column.getName())){
                     //清除 redis 缓存
                     log.info("清除 Redis 缓存 key={} 成功!\r\n","blog:"+column.getValue());
-                    redisUtil.del("blog:"+column.getValue());
+                    redisUtil.del(tableName+":"+column.getValue());
                 }
             });
         });

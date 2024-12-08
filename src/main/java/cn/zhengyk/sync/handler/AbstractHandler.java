@@ -48,8 +48,9 @@ public abstract class AbstractHandler {
             String table = entry.getHeader().getTableName();
             log.info("监听到数据库：{}，表：{} 的 {} 事件",database,table, eventType.toString());
             //如果 rowChange 不为空,则执行 handleRowChange()
-            Optional.ofNullable(this.getRowChange(entry))
-                    .ifPresent(this::handleRowChange);
+//            Optional.ofNullable(this.getRowChange(entry))
+//                    .ifPresent(this::handleRowChange);
+            handleRowChange(entry);
         }else{
             if(nextHandler != null){
                 nextHandler.handleMessage(entry);
@@ -60,20 +61,20 @@ public abstract class AbstractHandler {
     /**
      * 处理数据库 UPDATE、DELETE、INSERT 的数据
      */
-    public abstract void handleRowChange(RowChange rowChange);
+    public abstract void handleRowChange(Entry entry);
 
     /**
      * 获得数据库 UPDATE、DELETE、INSERT 的数据
      */
-    private RowChange getRowChange(Entry entry){
-        RowChange rowChange = null;
-        try {
-            rowChange = RowChange.parseFrom(entry.getStoreValue());
-        } catch (InvalidProtocolBufferException e) {
-            log.error("根据CanalEntry获取RowChange异常:", e);
-        }
-        return rowChange;
-    }
+//    private RowChange getRowChange(Entry entry){
+//        RowChange rowChange = null;
+//        try {
+//            rowChange = RowChange.parseFrom(entry.getStoreValue());
+//        } catch (InvalidProtocolBufferException e) {
+//            log.error("根据CanalEntry获取RowChange异常:", e);
+//        }
+//        return rowChange;
+//    }
 
     /**
      * columns 转 map

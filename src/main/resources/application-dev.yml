@@ -18,8 +18,8 @@ spring:
   #Redis配置
   redis:
     host: localhost
-    port: 7000
-    password: Yakai2018@
+    port: 6379
+    password:
     database: 0
     jedis:
       pool:
@@ -40,12 +40,12 @@ spring:
 
 # canal相关配置
 canal:
-  host: localhost
+  host: 10.72.77.43
   port: 11111
   destination: example
   username:
   password:
-  subscribe: test.blog
+  subscribe: lswl.*
   batchSize: 1000
 # subscribe 过滤规则
 # 1）  所有：.*   or  .*\\..*
